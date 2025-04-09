@@ -5,21 +5,22 @@ import cors from "cors"
 const app = express()
 const port = 8080
 
-const corsOptions = {
-    origin: function (origin,callback){
-        const allowedOrigin = /^(https?:\/\/)?([\w-]+\.)*amplifin\.co\.za$/
+// const corsOptions = {
+//     origin: function (origin,callback){
+//         const allowedOrigin = /^(https?:\/\/)?([\w-]+\.)*amplifin\.co\.za$/
 
-        if(allowedOrigin.test(origin) || !origin){
-            callback(null,true)
-        }else{
-            callback(new Error("Not allowed by CORS"),false)
-            console.log(origin);
+//         if(allowedOrigin.test(origin) || !origin){
+//             callback(null,true)
+//         }else{
+//             callback(new Error("Not allowed by CORS"),false)
+//             console.log(origin);
             
-        }
-    }
-}
+//         }
+//     }
+// }
 
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
+app.use(cors())
 
 // morne = 19092221395740 colleen = 12666713103132 zandile = 13602073995804 jessica = 19092221395740 jo = 12666711504924
 
