@@ -40,6 +40,7 @@ app
                 console.log(agent_availibilities[i].attributes.status);
                 if (agent_availibilities[i].attributes.status == 'online') {    
                     res.send(200)
+                            console.log("Agent with ID "+agent_id)
                 }else{
                     res.send(400)
                 }
