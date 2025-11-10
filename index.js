@@ -51,9 +51,35 @@ app
     })
 
 })
+app.get("/json", async (req, res) => {
+  try {
+    const response = await axios.get(`https://amplifin.zendesk.com/api/v2/agent_availabilities/${agent_id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Basic " + btoa("dduplessis@amplifin.co.za/token:4fOCcxGK9mLXPblJrWdkS0uWhmZfCZxoJyIufgL5"),
+        Accept: "application/json",
+      },
+    });
+
+    const agent_availabilities = response.data.included;
+    for (const item of agent_availabilities) {
+      if (item.id === `agent_availabilities|${agent_id}|channels|chat`) {
+        const status = item.attributes.status;
+        console.log("Agent status:", status);
+
+        // structured JSON for Flow Builder
+        return res.status(200).json({ status, code: status === "online" ? 200 : 400 });
+      }
+    }
+
+    res.status(404).json({ error: "Agent not found" });
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+})
 
 .listen(port ,()=>{
     console.log(`Listening on port ${port}`);
 })
-
 
