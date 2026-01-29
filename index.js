@@ -1,9 +1,13 @@
 import express from "express"
 import axios from "axios"
 import cors from "cors"
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express()
 const port = 8080
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // const corsOptions = {
 //     origin: function (origin,callback){
@@ -83,7 +87,10 @@ app.get("/json", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 })
-
+app.get("/live.js", (req, res) => {
+  res.type("application/javascript");
+  res.sendFile(path.join(__dirname, "public", "live.js"));
+})
 .listen(port ,()=>{
     console.log(`Listening on port ${port}`);
 })
