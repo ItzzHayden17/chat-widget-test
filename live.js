@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-10";
+  const NS = "afcw-v-11";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -71,7 +71,10 @@
            width="28" height="28"
            viewBox="0 0 24 24"
            fill="none"
-           aria-hidden="true">
+           aria-hidden="true"
+           role="button"
+           tabindex="0"
+           style="cursor:pointer;">
         <path d="M17 3.33782C15.5291 2.48697 13.8214 2 12 2C6.47715 2 2 6.47715 2 12C2 13.5997 2.37562 15.1116 3.04346 16.4525C3.22094 16.8088 3.28001 17.2161 3.17712 17.6006L2.58151 19.8267C2.32295 20.793 3.20701 21.677 4.17335 21.4185L6.39939 20.8229C6.78393 20.72 7.19121 20.7791 7.54753 20.9565C8.88837 21.6244 10.4003 22 12 22C17.5228 22 22 17.5228 22 12C22 10.1786 21.513 8.47087 20.6622 7"
               stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
@@ -83,7 +86,7 @@
                 display: none; overflow: hidden; font-family: Arial, sans-serif; box-sizing:border-box;">
 
       <div style="background: #323345; color: white; padding: 10px 20px; font-size: 16px; font-weight: bold; box-sizing:border-box;">
-        <div style="display: flex; flex-direction: row;">
+        <div style="display: flex; flex-direction: row; align-items:center; justify-content:space-between; ">
           <div style="display: flex; flex-direction: column;">
             <h1 style="font-size: 1.125rem; font-weight: 600; letter-spacing: -0.028rem; margin:0 0 6px 0; padding:0; line-height:1.125rem;">
               <img
@@ -105,6 +108,19 @@
               How can we Amplify your day?
             </p>
           </div>
+          <svg id="closeBtn" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 100 100"
+              width="30" height="30"
+              role="img" aria-label="Circle with X">
+            <!-- circle -->
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#FBC100" stroke-width="4"/>
+            <!-- X (cross) -->
+            <g stroke="#FBC100" stroke-width="6" stroke-linecap="round">
+              <line x1="30" y1="30" x2="70" y2="70"/>
+              <line x1="70" y1="30" x2="30" y2="70"/>
+            </g>
+          </svg>
+
         </div>
       </div>
 
@@ -162,8 +178,13 @@
   const support = root.querySelector(`#${CSS.escape(ID("support"))}`);
   const popup = root.querySelector(`#${CSS.escape(ID("popup"))}`);
   const popupText = root.querySelector(`#${CSS.escape(ID("popupText"))}`);
-  const ctaRow = root.querySelector(`#${CSS.escape(ID("ctaRow"))}`);
+  const closeBtn = document.getElementById("closeBtn")
 
+
+  closeBtn.style.cursor = "pointer"
+closeBtn.addEventListener("click", () => {
+  chatToggle.click();
+});
   chatBox.style.transition = "transform 260ms ease, opacity 260ms ease";
   chatBox.style.willChange = "transform, opacity";
   chatBox.style.transform = "translateY(14px)";
