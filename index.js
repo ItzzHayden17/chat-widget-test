@@ -22,7 +22,7 @@ const port = 8080
 // app.use(cors(corsOptions))
 app.use(cors())
 
-// morne = 19092221395740 colleen = 12666713103132 zandile = 13602073995804 jessica = 19092221395740 jo = 12666711504924 anray = 19188101330460
+// colleen = 12666713103132 zandile = 13602073995804 jessica = 19092221395740 jo = 12666711504924 anray = 19188101330460
 
 const agent_id = 19092221395740 
 app
@@ -39,10 +39,15 @@ app
             if (agent_availibilities[i].id == `agent_availabilities|${agent_id}|channels|chat`) {
                 console.log(agent_availibilities[i].attributes.status);
                 if (agent_availibilities[i].attributes.status == 'online') {    
-                    res.send(200)
+                    res.json({data : 200})
                             console.log("Agent with ID "+agent_id)
+                            console.log("online");
                 }else{
-                    res.send(400)
+                    res.sendStatus(400)
+                    console.log(agent_availibilities[i].attributes);
+                    console.log("Offline");
+                    
+                    
                 }
             }
             
