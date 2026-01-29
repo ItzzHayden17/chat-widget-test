@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-7";
+  const NS = "afcw-v-10";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -305,7 +305,7 @@
         if (spinnerEl) spinnerEl.remove();
       }
 
-      fetch("http://localhost:8080/", { cache: "no-store" })
+      fetch("https://chat-widget-test.onrender.com/", { cache: "no-store" })
         .then(function (response) {
           cleanupSpinnerOnly(); // leaves ONLY the support button in the row
           console.log(response)
