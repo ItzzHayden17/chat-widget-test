@@ -89,9 +89,10 @@ app.get("/json", async (req, res) => {
 })
 app.get("/live.js", (req, res) => {
   res.type("application/javascript");
-  res.sendFile(path.join(__dirname, "public", "live.js"));
+  res.sendFile(path.join(__dirname, "live.js"));
 })
 .listen(port ,()=>{
     console.log(`Listening on port ${port}`);
 })
+
 
