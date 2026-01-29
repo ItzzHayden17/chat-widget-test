@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-1.11";
+  const NS = "afcw-v-1.12";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -130,9 +130,9 @@
         <!-- Give the first block an ID so we can demonstrate scrolling by ID -->
         <div id="firstMsg" style="display:flex; flex-direction:row; align-items:flex-start;">
           <img
-            src="https://amplifin.co.za/wp-content/uploads/2025/07/Amplifin-Yellow-N-20px.png"
+            src="https://chat-widget-test.onrender.com/public/Amplifin_N.jpg"
             width="25"
-            height="25"
+            height="50"
             alt=""
             style="
               margin: 5px;
