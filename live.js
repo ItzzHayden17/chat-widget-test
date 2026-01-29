@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-11";
+  const NS = "afcw-v-1.11";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -145,10 +145,27 @@
               flex-shrink:0;
               border:0;
             ">
-          <div style="color:#555;background:#f5f5f5;padding:10px;border-radius:20px; max-width:220px; overflow-wrap:anywhere; word-break:break-word; box-sizing:border-box;">
-            Whether you’re looking for the right collection solution or need quick support, we’re here to help.<br><br>
-            Click here to speak with our Support or Sales Team on WhatsApp.<br>
-          </div>
+<div style="
+  color:#555;
+  background:#f5f5f5;
+  padding:10px;
+  border-radius:20px;
+  max-width:220px;
+  box-sizing:border-box;
+
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-size:14px;
+  line-height:1.35;
+  letter-spacing:0;
+  -webkit-text-size-adjust:100%;
+  text-rendering:optimizeLegibility;
+
+  overflow-wrap:anywhere;
+  word-break:break-word;
+">
+  Whether you’re looking for the right collection solution or need quick support, we’re here to help.<br><br>
+  Click here to speak with our Support or Sales Team on WhatsApp.<br>
+</div>
         </div>
 
         <div id="${ID("ctaRow")}" style="display:flex; flex-direction:row; justify-content:end; gap:6px; margin-top:10px;">
@@ -350,7 +367,24 @@ closeBtn.addEventListener("click", () => {
                      max-width:none !important; max-height:none !important;
                      object-fit:contain; flex-shrink:0; border:0;
                    ">
-              <div style="color:#555;background:#f5f5f5;padding:10px;border-radius:20px;margin-top:10px; max-width:220px; overflow-wrap:anywhere; box-sizing:border-box;">
+              <div style="
+                color:#555;
+                background:#f5f5f5;
+                padding:10px;
+                border-radius:20px;
+                max-width:220px;
+                box-sizing:border-box;
+
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+                font-size:14px;
+                line-height:1.35;
+                letter-spacing:0;
+                -webkit-text-size-adjust:100%;
+                text-rendering:optimizeLegibility;
+
+                overflow-wrap:anywhere;
+                word-break:break-word;
+              ">
                 Hello! This is Jessica from the Sales Team.<br><br>
                 I am currently unavailable.<br><br>
                 You can chat with our Support Team, who will assist you and ensure that a Sales Consultant
