@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-1.12";
+  const NS = "afcw-v-1.13";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -168,7 +168,7 @@
 </div>
         </div>
 
-        <div id="${ID("ctaRow")}" style="display:flex; flex-direction:row; justify-content:end; gap:6px; margin-top:10px;">
+        <div id="${ID("ctaRow")}" style="display:flex; flex-direction:row; justify-content:center; gap:6px; margin-top:10px;">
           <button id="${ID("support")}" type="button" style="outline:none; box-shadow:none; border:1px solid #FBC100;
               background:#fff; border-radius:15px; padding:10px; color:#FBC100; cursor:pointer; font-size:14px;">
             Support Team
@@ -225,33 +225,68 @@ closeBtn.addEventListener("click", () => {
 
   var hidePopupState = true;
 
-  function showPopup() {
-    if (chatBox.style.display === "block") return; // don't show when chat is open
+  let popupIntervalId = null;
+  let popupFirstTimeoutId = null;
+  let popupStopped = false;
 
-    if (!popup.dataset.firstShown) {
-      popupText.textContent =
-        "Hi, I’m Jessica, I am online and here to assist with any product questions you may have.";
-      popup.dataset.firstShown = "1";
-    } else {
-      popupText.textContent =
-        "Selecting the correct collection and payment solution is essential to your business success, I am happy to answer any questions you may have and guide you through our solutions, or alternatively make contact with you telephonically.";
-      hidePopupState = false;
-    }
+  function stopPopupsCompletely() {
+  popupStopped = true;
 
+  if (popupFirstTimeoutId) {
+    clearTimeout(popupFirstTimeoutId);
+    popupFirstTimeoutId = null;
+  }
+
+  if (popupIntervalId) {
+    clearInterval(popupIntervalId);
+    popupIntervalId = null;
+  }
+
+  hidePopup();
+}
+
+function showPopup() {
+  if (popupStopped) return;
+  if (chatBox.style.display === "block") return; // don't show when chat is open
+
+  const isFirst = !popup.dataset.firstShown;
+
+  if (isFirst) {
+    popupText.textContent =
+      "Hi, I’m Jessica, I am online and here to assist with any product questions you may have.";
+    popup.dataset.firstShown = "1";
+  } else {
+    // LAST iteration message
+    popupText.textContent =
+      "Selecting the correct collection and payment solution is essential to your business success, I am happy to answer any questions you may have and guide you through our solutions, or alternatively make contact with you telephonically.";
+
+    // show it, then hide after 10s and stop forever
     popup.style.display = "block";
-    popup.offsetHeight; // reflow for transition
+    popup.offsetHeight;
     popup.style.opacity = "1";
     popup.style.transform = "translateY(0)";
 
-    if (hidePopupState) {
-      window.setTimeout(hidePopup, 8000);
-    }
+    window.setTimeout(hidePopup, 10000); // ✅ hide after 10 sec
+
+    popupStopped = true;                 // ✅ prevent future popups
+    if (popupIntervalId) clearInterval(popupIntervalId);
+    return;
   }
 
-  // show once shortly after load, then every 15s while closed
-  window.setTimeout(showPopup, 10000);
-  setInterval(showPopup, 20000);
-  // --------------------------------------------
+  // normal show
+  popup.style.display = "block";
+  popup.offsetHeight;
+  popup.style.opacity = "1";
+  popup.style.transform = "translateY(0)";
+
+  // first popup can still hide after 8s if you want
+  window.setTimeout(hidePopup, 8000);
+}
+
+
+popupFirstTimeoutId = window.setTimeout(showPopup, 10000);
+popupIntervalId = window.setInterval(showPopup, 20000);
+
 
   chatToggle.style.transition = "transform 180ms ease";
 
@@ -272,6 +307,7 @@ closeBtn.addEventListener("click", () => {
       hidePopup();
       e.preventDefault();
       e.stopPropagation();
+      stopPopupsCompletely();
 
       const opening = chatBox.style.display === "none";
       if (opening) {
