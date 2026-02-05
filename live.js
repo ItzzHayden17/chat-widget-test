@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-1.13";
+  const NS = "afcw-v-1.14";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -168,7 +168,7 @@
 </div>
         </div>
 
-        <div id="${ID("ctaRow")}" style="display:flex; flex-direction:row; justify-content:center; gap:6px; margin-top:10px;">
+        <div id="${ID("ctaRow")}" style="display:flex; flex-direction:row; justify-content:center; gap:6px; margin:10px 0;">
           <button id="${ID("support")}" type="button" style="outline:none; box-shadow:none; border:1px solid #FBC100;
               background:#fff; border-radius:15px; padding:10px; color:#FBC100; cursor:pointer; font-size:14px;">
             Support Team
@@ -253,7 +253,7 @@ function showPopup() {
 
   if (isFirst) {
     popupText.textContent =
-      "Hi, I’m Jessica, I am online and here to assist with any product questions you may have.";
+      "Hi, I’m Jessica, I am here to assist with any product questions you may have.";
     popup.dataset.firstShown = "1";
   } else {
     // LAST iteration message
