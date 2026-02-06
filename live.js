@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-1.16";
+  const NS = "afcw-v-1.17";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -14,8 +14,6 @@
     const target = chatMessagesEl.querySelector(`#${CSS.escape(targetId)}`);
     if (!target) return;
 
-    // Make sure there is enough "extra" scroll space so block:start can actually land where you want.
-    // (Without this, the last item can't be aligned at the top.)
     if (!chatMessagesEl.dataset.afcwPadApplied) {
       const currentPadBottom =
         parseInt(getComputedStyle(chatMessagesEl).paddingBottom, 10) || 0;
@@ -23,10 +21,7 @@
       chatMessagesEl.dataset.afcwPadApplied = "1";
     }
 
-    // Offset the snap point so it starts below your header (tweak if needed)
     target.style.scrollMarginTop = "80px";
-
-    // Scroll so the target starts at the top of the scroll area
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -54,11 +49,10 @@
         <div style="position:relative; background:#ffffff; color:#323345; border-radius:14px;
                     box-shadow:0 10px 30px rgba(0,0,0,0.15);
                     padding:12px 14px; font-size:13px; line-height:1.25; box-sizing:border-box;">
-          <div id="${ID("popupText")}" style="position:relative">
-          
+          <div id="${ID("popupText")}" style="position:relative; cursor:pointer">
             Selecting the correct collection and payment solution is essential to your business success, I am happy to answer any questions you may have and guide you through our solutions, or alternatively make contact with you telephonically.
           </div>
-          <p id= "closePopupX" style="
+          <p id="closePopupX" style="
           position:absolute;
           right:0;
           top:0;
@@ -203,8 +197,7 @@
   const support = root.querySelector(`#${CSS.escape(ID("support"))}`);
   const popup = root.querySelector(`#${CSS.escape(ID("popup"))}`);
   const popupText = root.querySelector(`#${CSS.escape(ID("popupText"))}`);
-  const closeBtn = document.getElementById("closeBtn");
-  // Use root.querySelector to find the X inside the widget (safer in constrained contexts)
+  const closeBtn = root.querySelector("#closeBtn");
   const closePopupX = root.querySelector("#closePopupX");
 
   if (closeBtn) closeBtn.style.cursor = "pointer";
@@ -243,14 +236,33 @@
   let popupFirstTimeoutId = null;
   let popupStopped = false;
 
-  // --- FIXED: attach the click handler to the close 'x' reliably ---
+  // Attach close 'x' once
   if (closePopupX) {
     closePopupX.style.cursor = "pointer";
     closePopupX.addEventListener("click", function (e) {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopPropagation(); // prevent bubbling to popup click
       stopPopupsCompletely();
-      document.cookie = "popupDismissed=true";
+      // remember choice
+      document.cookie = "popupDismissed=true; path=/; max-age=" + 60 * 60 * 24 * 30;
+    });
+  }
+
+  // Attach popupText click once (open chat)
+  if (popupText && chatToggle) {
+    popupText.addEventListener("click", function (e) {
+      e.stopPropagation(); // don't bubble to popup container if you prefer
+      chatToggle.click();
+    });
+  }
+
+  // Attach popup container click ONCE (open chat when clicking background area)
+  if (popup && chatToggle) {
+    popup.addEventListener("click", function (e) {
+      // If the click happened on an interactive inner element, ignore it.
+      // This ensures closePopupX or buttons can stopPropagation and prevent this.
+      if (e.target !== popup) return;
+      chatToggle.click();
     });
   }
 
@@ -278,19 +290,14 @@
 
     // enable pointer events when visible so clicks reach children (important!)
     popup.style.display = "block";
-    popup.style.pointerEvents = "auto"; // <-- critical so closePopupX receives clicks
+    popup.style.pointerEvents = "auto";
     popup.offsetHeight; // reflow for transition
-
-    popup.addEventListener("click",()=>{
-      chatToggle.click()
-    })
 
     if (isFirst) {
       popupText.textContent =
         "Hi, I’m Jessica, I am here to assist with any product questions you may have.";
       popup.dataset.firstShown = "1";
 
-      // show transition
       popup.style.opacity = "1";
       popup.style.transform = "translateY(0)";
       window.setTimeout(hidePopup, 8000);
@@ -299,7 +306,6 @@
       popupText.textContent =
         "Selecting the correct collection and payment solution is essential to your business success, I am happy to answer any questions you may have and guide you through our solutions, or alternatively make contact with you telephonically.";
 
-      // show it, then hide after 10s and stop forever
       popup.style.opacity = "1";
       popup.style.transform = "translateY(0)";
 
@@ -310,13 +316,13 @@
       return;
     }
   }
+
+  // If the user dismissed before (cookie), don't schedule.
   const dismissed = getCookie("popupDismissed");
-
   if (!dismissed) {
-      popupFirstTimeoutId = window.setTimeout(showPopup, 10000);
-      popupIntervalId = window.setInterval(showPopup, 20000);
+    popupFirstTimeoutId = window.setTimeout(showPopup, 10000);
+    popupIntervalId = window.setInterval(showPopup, 20000);
   }
-
 
   chatToggle.style.transition = "transform 180ms ease";
 
@@ -375,8 +381,6 @@
       e.preventDefault();
       e.stopPropagation();
 
-      // ✅ FIX: spinner replaces the SALES button, then both spinner+sales are gone after response
-      // (Support button remains as the only CTA in that row)
       const salesBtn = sales;
       const parent = salesBtn.parentNode;
 
@@ -401,7 +405,6 @@
         "></div>
       `;
 
-      // replace the sales button with spinner
       parent.replaceChild(spinner, salesBtn);
 
       function cleanupSpinnerOnly() {
@@ -411,17 +414,14 @@
 
       fetch("https://chat-widget-test.onrender.com/", { cache: "no-store" })
         .then(function (response) {
-          cleanupSpinnerOnly(); // leaves ONLY the support button in the row
-          console.log(response)
+          cleanupSpinnerOnly();
           if (response.ok) {
             go("https://api.whatsapp.com/send/?phone=27716025710");
-            console.log("Jessica is online")
             return;
           }
 
-          // ---- NEW CONTENT (this is what we will scroll to by ID) ----
           const secondMsg = document.createElement("div");
-          secondMsg.id = "secondMsg"; // <-- scroll target ID
+          secondMsg.id = "secondMsg";
           secondMsg.innerHTML = `
             <div style="display:flex;flex-direction:row; align-items:flex-start;">
               <img src="https://amplifin.zendesk.com/embeddable/avatars/20322948535964"
@@ -499,24 +499,24 @@
             "width:auto; display:flex; flex-direction:column; box-sizing:border-box;";
           wrapper.append(meetingBtn, supportBtn);
 
-          // Append new content
           chatMessages.append(secondMsg, wrapper);
 
-          // ✅ THE IMPORTANT PART: scroll to a specific ID inside the chat container
+          // Scroll to the new message
           scrollToMessageId(chatMessages, "secondMsg");
         })
         .catch(function () {
-          cleanupSpinnerOnly(); // leaves ONLY the support button in the row
+          cleanupSpinnerOnly();
           go("https://api.whatsapp.com/send/?phone=27675974601");
         });
     },
     true
   );
-})();
 
-function getCookie(name) {
-  const match = document.cookie.match(
-    new RegExp('(^| )' + name + '=([^;]+)')
-  );
-  return match ? decodeURIComponent(match[2]) : null;
-}
+  // cookie helper
+  function getCookie(name) {
+    const match = document.cookie.match(
+      new RegExp("(^| )" + name + "=([^;]+)")
+    );
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+})();
