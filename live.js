@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-1.15";
+  const NS = "afcw-v-1.16";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -250,6 +250,7 @@
       e.preventDefault();
       e.stopPropagation();
       stopPopupsCompletely();
+      document.cookie = "popupDismissed=true";
     });
   }
 
@@ -280,6 +281,10 @@
     popup.style.pointerEvents = "auto"; // <-- critical so closePopupX receives clicks
     popup.offsetHeight; // reflow for transition
 
+    popup.addEventListener("click",()=>{
+      chatToggle.click()
+    })
+
     if (isFirst) {
       popupText.textContent =
         "Hi, I’m Jessica, I am here to assist with any product questions you may have.";
@@ -305,9 +310,13 @@
       return;
     }
   }
+  const dismissed = getCookie("popupDismissed");
 
-  popupFirstTimeoutId = window.setTimeout(showPopup, 10000);
-  popupIntervalId = window.setInterval(showPopup, 20000);
+  if (!dismissed) {
+      popupFirstTimeoutId = window.setTimeout(showPopup, 10000);
+      popupIntervalId = window.setInterval(showPopup, 20000);
+  }
+
 
   chatToggle.style.transition = "transform 180ms ease";
 
@@ -504,3 +513,10 @@
     true
   );
 })();
+
+function getCookie(name) {
+  const match = document.cookie.match(
+    new RegExp('(^| )' + name + '=([^;]+)')
+  );
+  return match ? decodeURIComponent(match[2]) : null;
+}
