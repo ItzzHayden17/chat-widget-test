@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-1.14";
+  const NS = "afcw-v-1.15";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -54,9 +54,17 @@
         <div style="position:relative; background:#ffffff; color:#323345; border-radius:14px;
                     box-shadow:0 10px 30px rgba(0,0,0,0.15);
                     padding:12px 14px; font-size:13px; line-height:1.25; box-sizing:border-box;">
-          <div id="${ID("popupText")}">
+          <div id="${ID("popupText")}" style="position:relative">
+          
             Selecting the correct collection and payment solution is essential to your business success, I am happy to answer any questions you may have and guide you through our solutions, or alternatively make contact with you telephonically.
           </div>
+          <p id= "closePopupX" style="
+          position:absolute;
+          right:0;
+          top:0;
+          margin-top: -20px;
+          cursor:pointer;
+          ">x</p>
           <div style="position:absolute; left:-7px; top:16px; width:14px; height:14px; background:#fff;
                       transform:rotate(45deg); box-shadow:-6px 6px 18px rgba(0,0,0,0.06);"></div>
         </div>
@@ -195,13 +203,17 @@
   const support = root.querySelector(`#${CSS.escape(ID("support"))}`);
   const popup = root.querySelector(`#${CSS.escape(ID("popup"))}`);
   const popupText = root.querySelector(`#${CSS.escape(ID("popupText"))}`);
-  const closeBtn = document.getElementById("closeBtn")
+  const closeBtn = document.getElementById("closeBtn");
+  // Use root.querySelector to find the X inside the widget (safer in constrained contexts)
+  const closePopupX = root.querySelector("#closePopupX");
 
+  if (closeBtn) closeBtn.style.cursor = "pointer";
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      chatToggle.click();
+    });
+  }
 
-  closeBtn.style.cursor = "pointer"
-closeBtn.addEventListener("click", () => {
-  chatToggle.click();
-});
   chatBox.style.transition = "transform 260ms ease, opacity 260ms ease";
   chatBox.style.willChange = "transform, opacity";
   chatBox.style.transform = "translateY(14px)";
@@ -216,6 +228,8 @@ closeBtn.addEventListener("click", () => {
   popup.style.transition = "transform 220ms ease, opacity 220ms ease";
 
   function hidePopup() {
+    // disable pointer events while hiding
+    popup.style.pointerEvents = "none";
     popup.style.opacity = "0";
     popup.style.transform = "translateY(10px)";
     window.setTimeout(function () {
@@ -229,64 +243,71 @@ closeBtn.addEventListener("click", () => {
   let popupFirstTimeoutId = null;
   let popupStopped = false;
 
+  // --- FIXED: attach the click handler to the close 'x' reliably ---
+  if (closePopupX) {
+    closePopupX.style.cursor = "pointer";
+    closePopupX.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      stopPopupsCompletely();
+    });
+  }
+
   function stopPopupsCompletely() {
-  popupStopped = true;
+    popupStopped = true;
 
-  if (popupFirstTimeoutId) {
-    clearTimeout(popupFirstTimeoutId);
-    popupFirstTimeoutId = null;
+    if (popupFirstTimeoutId) {
+      clearTimeout(popupFirstTimeoutId);
+      popupFirstTimeoutId = null;
+    }
+
+    if (popupIntervalId) {
+      clearInterval(popupIntervalId);
+      popupIntervalId = null;
+    }
+
+    hidePopup();
   }
 
-  if (popupIntervalId) {
-    clearInterval(popupIntervalId);
-    popupIntervalId = null;
-  }
+  function showPopup() {
+    if (popupStopped) return;
+    if (chatBox.style.display === "block") return; // don't show when chat is open
 
-  hidePopup();
-}
+    const isFirst = !popup.dataset.firstShown;
 
-function showPopup() {
-  if (popupStopped) return;
-  if (chatBox.style.display === "block") return; // don't show when chat is open
-
-  const isFirst = !popup.dataset.firstShown;
-
-  if (isFirst) {
-    popupText.textContent =
-      "Hi, I’m Jessica, I am here to assist with any product questions you may have.";
-    popup.dataset.firstShown = "1";
-  } else {
-    // LAST iteration message
-    popupText.textContent =
-      "Selecting the correct collection and payment solution is essential to your business success, I am happy to answer any questions you may have and guide you through our solutions, or alternatively make contact with you telephonically.";
-
-    // show it, then hide after 10s and stop forever
+    // enable pointer events when visible so clicks reach children (important!)
     popup.style.display = "block";
-    popup.offsetHeight;
-    popup.style.opacity = "1";
-    popup.style.transform = "translateY(0)";
+    popup.style.pointerEvents = "auto"; // <-- critical so closePopupX receives clicks
+    popup.offsetHeight; // reflow for transition
 
-    window.setTimeout(hidePopup, 10000); // ✅ hide after 10 sec
+    if (isFirst) {
+      popupText.textContent =
+        "Hi, I’m Jessica, I am here to assist with any product questions you may have.";
+      popup.dataset.firstShown = "1";
 
-    popupStopped = true;                 // ✅ prevent future popups
-    if (popupIntervalId) clearInterval(popupIntervalId);
-    return;
+      // show transition
+      popup.style.opacity = "1";
+      popup.style.transform = "translateY(0)";
+      window.setTimeout(hidePopup, 8000);
+    } else {
+      // LAST iteration message
+      popupText.textContent =
+        "Selecting the correct collection and payment solution is essential to your business success, I am happy to answer any questions you may have and guide you through our solutions, or alternatively make contact with you telephonically.";
+
+      // show it, then hide after 10s and stop forever
+      popup.style.opacity = "1";
+      popup.style.transform = "translateY(0)";
+
+      window.setTimeout(hidePopup, 10000); // hide after 10 sec
+
+      popupStopped = true; // prevent future popups
+      if (popupIntervalId) clearInterval(popupIntervalId);
+      return;
+    }
   }
 
-  // normal show
-  popup.style.display = "block";
-  popup.offsetHeight;
-  popup.style.opacity = "1";
-  popup.style.transform = "translateY(0)";
-
-  // first popup can still hide after 8s if you want
-  window.setTimeout(hidePopup, 8000);
-}
-
-
-popupFirstTimeoutId = window.setTimeout(showPopup, 10000);
-popupIntervalId = window.setInterval(showPopup, 20000);
-
+  popupFirstTimeoutId = window.setTimeout(showPopup, 10000);
+  popupIntervalId = window.setInterval(showPopup, 20000);
 
   chatToggle.style.transition = "transform 180ms ease";
 
