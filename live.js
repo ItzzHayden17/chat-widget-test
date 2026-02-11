@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const NS = "afcw-v-1.17";
+  const NS = "afcw-v-1.18";
   const ID = (x) => `${NS}-${x}`;
   const ROOT_ID = ID("root");
 
@@ -58,6 +58,9 @@
           top:0;
           margin-top: -20px;
           cursor:pointer;
+          background-color : rgba(255, 255, 255, 0.15);
+          padding:3px 5px;
+          border-radius:50%;
           ">x</p>
           <div style="position:absolute; left:-7px; top:16px; width:14px; height:14px; background:#fff;
                       transform:rotate(45deg); box-shadow:-6px 6px 18px rgba(0,0,0,0.06);"></div>
@@ -310,6 +313,9 @@
       popup.style.transform = "translateY(0)";
 
       window.setTimeout(hidePopup, 10000); // hide after 10 sec
+      window.setTimeout(() => {
+      document.cookie = "popupDismissed=true; path=/";
+    }, 10000);
 
       popupStopped = true; // prevent future popups
       if (popupIntervalId) clearInterval(popupIntervalId);
@@ -520,3 +526,5 @@
     return match ? decodeURIComponent(match[2]) : null;
   }
 })();
+
+
