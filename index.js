@@ -91,9 +91,35 @@ app.get("/live.js", (req, res) => {
   res.type("application/javascript");
   res.sendFile(path.join(__dirname, "live.js"));
 })
+
+.post("/aie-helper", async (req, res) => {
+  try {
+    const docRef = db.collection("aie-helper-ping-count").doc("aie-helper-ping-count");
+
+    await docRef.set(
+      {
+        count: admin.firestore.FieldValue.increment(1),
+      },
+      { merge: true }
+    );
+
+    res.send("Ping count updated");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error updating count");
+  }
+})
+
+
+.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+})
+
+            
 .listen(port ,()=>{
     console.log(`Listening on port ${port}`);
 })
+
 
 
 
