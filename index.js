@@ -3,6 +3,8 @@ import axios from "axios"
 import cors from "cors"
 import path from "path";
 import { fileURLToPath } from "url";
+import admin from "firebase-admin";
+import serviceAccount from "./cwd412-daa02-firebase-adminsdk-29rju-ea1210c3ef.json" assert { type: "json" };
 
 const app = express()
 const port = 8080
