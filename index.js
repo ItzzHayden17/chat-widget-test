@@ -10,6 +10,12 @@ const serviceAccount = JSON.parse(
   fs.readFileSync("./cwd412-daa02-firebase-adminsdk-29rju-ea1210c3ef.json", "utf8")
 );
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
+
 const app = express()
 const port = 8080
 const __filename = fileURLToPath(import.meta.url);
@@ -112,7 +118,7 @@ app.get("/live.js", (req, res) => {
     res.send("Ping count updated");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error updating count");
+    res.status(500).send("Error updating count :" + err);
   }
 })
 
