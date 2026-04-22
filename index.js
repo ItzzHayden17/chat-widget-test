@@ -4,7 +4,11 @@ import cors from "cors"
 import path from "path";
 import { fileURLToPath } from "url";
 import admin from "firebase-admin";
-import serviceAccount from "./cwd412-daa02-firebase-adminsdk-29rju-ea1210c3ef.json" assert { type: "json" };
+import fs from "fs";
+
+const serviceAccount = JSON.parse(
+  fs.readFileSync("./cwd412-daa02-firebase-adminsdk-29rju-ea1210c3ef.json", "utf8")
+);
 
 const app = express()
 const port = 8080
