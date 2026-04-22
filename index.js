@@ -100,7 +100,7 @@ app.get("/live.js", (req, res) => {
 
 .post("/aie-helper", async (req, res) => {
   try {
-    const docRef = db.collection("aie-helper-ping-count").doc("aie-helper-ping-count");
+    const docRef = db.collection("aie-helper-ping-count").doc("DNegfRY6rBX3zNk8viw8");
 
     await docRef.set(
       {
