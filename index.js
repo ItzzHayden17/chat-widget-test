@@ -116,11 +116,6 @@ app.get("/live.js", (req, res) => {
   }
 })
 
-
-.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-})
-
             
 .listen(port ,()=>{
     console.log(`Listening on port ${port}`);
